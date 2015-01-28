@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Admin panel</title>
+</head>
+<body>
+{% url 'adminpanel.views.admin_login' as login_url %}
+<form id="login_form" method="post" action="{{ login_url }}">
+    {% csrf_token %}
+    {{ login_form.username.errors }}
+    {{ login_form.password.error_messages }}
+    {{ login_form }}
+    <input type="submit" value="submit"/>
+</form>
+</body>
+</html>
