@@ -1,4 +1,21 @@
 {% extends 'adminpanel/adminpanel_base.html' %}
+{% block css %}
+    <style>
+        textarea {
+            width: 100%;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        input[type=text] {
+            width: 100%;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+    </style>
+{% endblock %}
 {% block title %}
     Admin panel
 {% endblock %}
@@ -6,7 +23,14 @@
     {% url 'articles.views.articles' as url_for_adding_article %}
     <form action="{{ url_for_adding_article }}" method="post">
         {% csrf_token %}
-        {{ article_form }}
-        <input type="submit" value="Submit">
+        <h3>{{ article_form.title.label_tag }}</h3>
+        {{ article_form.title }}
+        <h3>{{ article_form.preface.label_tag }}</h3>
+        {{ article_form.preface }}
+        <h3>{{ article_form.content.label_tag }}</h3>
+        {{ article_form.content }}
+        <br>
+        <br>
+        <input class="btn btn-primary btn-lg" type="submit" value="Create">
     </form>
 {% endblock %}
