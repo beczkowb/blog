@@ -7,6 +7,11 @@ from .models import Article
 from .forms import ArticleForm
 
 
+def home(request):
+    three_newest_articles = Article.objects.all().order_by('-id')[:3]
+    return render(request, 'blog/home.html', {'articles': three_newest_articles})
+
+
 def articles(request):
     if request.method == 'GET':
         all_articles = Article.objects.all()
@@ -20,7 +25,7 @@ def articles(request):
             articles_page = paginator.page(paginator.num_pages)
         return render(request, 'articles/articles.html', {'articles': articles_page})
     elif request.method == 'POST':
-        if not request.user.is_authenticated():
+        if request.user.is_authenticated():
             article_form = ArticleForm(request.POST)
             if article_form.is_valid():
                 article_form.save()
@@ -40,8 +45,32 @@ def articles_id(request, article_id):
             title = single_article.title
             preface = single_article.preface
             content = single_article.content
-            return render(request, 'articles/article.html', {'title': title, 'preface': preface, 'content': content})
+            created_at = single_article.created_at
+            return render(request, 'articles/article.html', {
+                'title': title,
+                'preface': preface,
+                'content': content,
+                'created_at': created_at
+            })
         except ObjectDoesNotExist:
             return HttpResponseNotFound(_('Article not found'))
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+
+def articles_dates(request):
+    if request.method == 'GET':
+        try:
+            sorted_articles = Article.objects.all().order_by('created_at')
+            first_date = sorted_articles[0].created_at
+            last_date = sorted_articles[len(sorted_articles) - 1].created_at
+            return render(request, 'articles/article.html', {
+                'title': title,
+                'preface': preface,
+                'content': content,
+                'created_at': created_at
+            })
+        except ObjectDoesNotExist:
+            return HttpResponseNotFound(_('Zero articles yet'))
     else:
         return HttpResponseNotAllowed(['GET'])
