@@ -3,7 +3,7 @@ from django.http.response import HttpResponseNotAllowed, HttpResponseNotFound, H
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Article
+from .models import Article, Tag
 from .forms import ArticleForm
 
 
@@ -23,7 +23,7 @@ def articles(request):
             articles_page = paginator.page(1)
         except EmptyPage:
             articles_page = paginator.page(paginator.num_pages)
-        return render(request, 'articles/articles.html', {'articles': articles_page})
+        return render(request, 'articles/articles.html', {'articles': articles_page, 'title': 'All articles'})
     elif request.method == 'POST':
         if request.user.is_authenticated():
             article_form = ArticleForm(request.POST)
@@ -65,12 +65,37 @@ def articles_dates(request):
             first_date = sorted_articles[0].created_at
             last_date = sorted_articles[len(sorted_articles) - 1].created_at
             return render(request, 'articles/article.html', {
-                'title': title,
-                'preface': preface,
-                'content': content,
-                'created_at': created_at
+                'dates': dates,
             })
         except ObjectDoesNotExist:
             return HttpResponseNotFound(_('Zero articles yet'))
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+
+def tags(request):
+    try:
+        all_tags = Tag.objects.all()
+        return render(request, 'articles/tags.html', {
+            'tags': all_tags,
+        })
+    except ObjectDoesNotExist:
+        pass
+
+
+def articles_tag_id(request, tag_id):
+    if request.method == 'GET':
+        articles_by_tag = Article.objects.filter(tags__in=[tag_id])
+        paginator = Paginator(articles_by_tag, 20)
+        page = request.GET.get('page')
+        try:
+            articles_page = paginator.page(page)
+        except PageNotAnInteger:
+            articles_page = paginator.page(1)
+        except EmptyPage:
+            articles_page = paginator.page(paginator.num_pages)
+        except ObjectDoesNotExist:
+            return HttpResponse('Tag not found', status=404)
+        return render(request, 'articles/articles.html', {'articles': articles_page, 'title': 'Articles with tag'})
     else:
         return HttpResponseNotAllowed(['GET'])

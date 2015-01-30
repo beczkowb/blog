@@ -1,0 +1,21 @@
+{% extends 'blog/base.html' %}
+{% block title %}
+    Tags
+{% endblock %}
+
+{% block js %}
+    {% load staticfiles %}
+    <script src="{% static 'js/tags.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container" style="border-bottom: 1px solid #E7E7E7;">
+        <h1>All tags</h1>
+    </div>
+    <br>
+    <div class="container">
+        {% for tag in tags %}
+            <button class="btn btn-primary" type="button" data-id="{{ tag.id }}">{{ tag.name }}</button>
+        {% endfor %}
+    </div>
+{% endblock %}
