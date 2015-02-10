@@ -72,6 +72,12 @@ def articles_archive(request):
         try:
             categories = Category.objects.all()
             sorted_articles = Article.objects.all().order_by('created_at')
+            if not sorted_articles:
+                return render(request, 'articles/archive.html', {
+                    'dates': [],
+                    'categories': categories,
+                    'title': 'Archive'
+                })
             first_date = sorted_articles[0].created_at
             last_date = sorted_articles[len(sorted_articles) - 1].created_at
             dates = OrderedDict()
