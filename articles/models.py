@@ -7,7 +7,7 @@ class Article(models.Model):
     preface = models.TextField(max_length=10000, verbose_name=_('preface'))
     content = models.TextField(max_length=500000, verbose_name=_('content'))
 
-    category = models.ForeignKey('Category', verbose_name=_('category'))
+    category = models.ForeignKey('Category', blank=True, null=True, verbose_name=_('category'))
 
     tags = models.ManyToManyField('Tag', blank=True, null=True, verbose_name=_('tags'))
 
@@ -29,3 +29,6 @@ class Category(models.Model):
 
     def __str__(self):
         return '%s' % self.name
+
+    class Meta:
+        verbose_name_plural = _('Categories')

@@ -1,0 +1,26 @@
+{% extends 'blog/base.html' %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block content %}
+    <div class="container" style="border-bottom: 1px solid #E7E7E7;">
+        <h1>Archive</h1>
+    </div>
+    <br>
+    <div class="container">
+        <div class="row">
+            {% for year, months in dates.items %}
+                <div class="col-xs-6 col-sm-4 col-md-2">
+                    <h3><a href="{{ year }}">{{ year }}</a></h3>
+                    <ul>
+                        {% for month in months %}
+                            <li>
+                                <a href="{{ year }}/{{ forloop.counter }}">{{ month }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

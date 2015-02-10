@@ -1,19 +1,22 @@
+from collections import OrderedDict
 from django.shortcuts import render
 from django.http.response import HttpResponseNotAllowed, HttpResponseNotFound, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Article, Tag
+from .models import Article, Tag, Category
 from .forms import ArticleForm
 
 
 def home(request):
     three_newest_articles = Article.objects.all().order_by('-id')[:3]
-    return render(request, 'blog/home.html', {'articles': three_newest_articles})
+    categories = Category.objects.all()
+    return render(request, 'blog/home.html', {'articles': three_newest_articles, 'categories': categories})
 
 
 def articles(request):
     if request.method == 'GET':
+        categories = Category.objects.all()
         all_articles = Article.objects.all()
         paginator = Paginator(all_articles, 20)
         page = request.GET.get('page')
@@ -23,7 +26,9 @@ def articles(request):
             articles_page = paginator.page(1)
         except EmptyPage:
             articles_page = paginator.page(paginator.num_pages)
-        return render(request, 'articles/articles.html', {'articles': articles_page, 'title': 'All articles'})
+        return render(request, 'articles/articles.html', {
+            'articles': articles_page, 'title': 'All articles', 'categories': categories
+        })
     elif request.method == 'POST':
         if request.user.is_authenticated():
             article_form = ArticleForm(request.POST)
@@ -41,7 +46,9 @@ def articles(request):
 def articles_id(request, article_id):
     if request.method == 'GET':
         try:
+            categories = Category.objects.all()
             single_article = Article.objects.get(id=article_id)
+            tags = single_article.tags.all()
             title = single_article.title
             preface = single_article.preface
             content = single_article.content
@@ -50,7 +57,9 @@ def articles_id(request, article_id):
                 'title': title,
                 'preface': preface,
                 'content': content,
-                'created_at': created_at
+                'created_at': created_at,
+                'categories': categories,
+                'tags': tags
             })
         except ObjectDoesNotExist:
             return HttpResponseNotFound(_('Article not found'))
@@ -58,14 +67,22 @@ def articles_id(request, article_id):
         return HttpResponseNotAllowed(['GET'])
 
 
-def articles_dates(request):
+def articles_archive(request):
     if request.method == 'GET':
         try:
+            categories = Category.objects.all()
             sorted_articles = Article.objects.all().order_by('created_at')
             first_date = sorted_articles[0].created_at
             last_date = sorted_articles[len(sorted_articles) - 1].created_at
-            return render(request, 'articles/article.html', {
+            dates = OrderedDict()
+            months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
+                      'November', 'December']
+            for i in range(int(last_date.year) - int(first_date.year) + 6):
+                dates[first_date.year + i] = months
+            return render(request, 'articles/archive.html', {
                 'dates': dates,
+                'categories': categories,
+                'title': 'Archive'
             })
         except ObjectDoesNotExist:
             return HttpResponseNotFound(_('Zero articles yet'))
@@ -75,9 +92,11 @@ def articles_dates(request):
 
 def tags(request):
     try:
+        categories = Category.objects.all()
         all_tags = Tag.objects.all()
         return render(request, 'articles/tags.html', {
             'tags': all_tags,
+            'categories': categories,
         })
     except ObjectDoesNotExist:
         pass
@@ -85,6 +104,7 @@ def tags(request):
 
 def articles_tag_id(request, tag_id):
     if request.method == 'GET':
+        categories = Category.objects.all()
         articles_by_tag = Article.objects.filter(tags__in=[tag_id])
         paginator = Paginator(articles_by_tag, 20)
         page = request.GET.get('page')
@@ -96,6 +116,30 @@ def articles_tag_id(request, tag_id):
             articles_page = paginator.page(paginator.num_pages)
         except ObjectDoesNotExist:
             return HttpResponse('Tag not found', status=404)
-        return render(request, 'articles/articles.html', {'articles': articles_page, 'title': 'Articles with tag'})
+        return render(request, 'articles/articles.html', {
+            'articles': articles_page, 'title': 'Articles with tag',
+            'categories': categories})
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+
+def articles_category_id(request, category_id):
+    if request.method == 'GET':
+        categories = Category.objects.all()
+        category = Category.objects.get(id=category_id)
+        articles_by_category = Article.objects.filter(category=category)
+        paginator = Paginator(articles_by_category, 20)
+        page = request.GET.get('page')
+        try:
+            articles_page = paginator.page(page)
+        except PageNotAnInteger:
+            articles_page = paginator.page(1)
+        except EmptyPage:
+            articles_page = paginator.page(paginator.num_pages)
+        except ObjectDoesNotExist:
+            return HttpResponse('Tag not found', status=404)
+        return render(request, 'articles/articles.html', {
+            'articles': articles_page, 'title': str(category),
+            'categories': categories})
     else:
         return HttpResponseNotAllowed(['GET'])
