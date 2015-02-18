@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import markdown
 from django.shortcuts import render
 from django.http.response import HttpResponseNotAllowed, HttpResponseNotFound, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,7 +52,7 @@ def articles_id(request, article_id):
             tags = single_article.tags.all()
             title = single_article.title
             preface = single_article.preface
-            content = single_article.content
+            content = markdown.markdown(single_article.content)
             created_at = single_article.created_at
             return render(request, 'articles/article.html', {
                 'title': title,
@@ -83,7 +84,7 @@ def articles_archive(request):
             dates = OrderedDict()
             months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
                       'November', 'December']
-            for i in range(int(last_date.year) - int(first_date.year) + 6):
+            for i in range(int(last_date.year) - int(first_date.year)+1):
                 dates[first_date.year + i] = months
             return render(request, 'articles/archive.html', {
                 'dates': dates,
@@ -146,6 +147,48 @@ def articles_category_id(request, category_id):
             return HttpResponse('Tag not found', status=404)
         return render(request, 'articles/articles.html', {
             'articles': articles_page, 'title': str(category),
+            'categories': categories})
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+
+def articles_year(request, year):
+    if request.method == 'GET':
+        categories = Category.objects.all()
+        articles_by_year = Article.objects.filter(created_at__year=year)
+        paginator = Paginator(articles_by_year, 20)
+        page = request.GET.get('page')
+        try:
+            articles_page = paginator.page(page)
+        except PageNotAnInteger:
+            articles_page = paginator.page(1)
+        except EmptyPage:
+            articles_page = paginator.page(paginator.num_pages)
+        except ObjectDoesNotExist:
+            return HttpResponse('Tag not found', status=404)
+        return render(request, 'articles/articles.html', {
+            'articles': articles_page, 'title': 'Articles from ' + str(year),
+            'categories': categories})
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+
+def articles_year_month(request, year, month):
+    if request.method == 'GET':
+        categories = Category.objects.all()
+        articles_by_month = Article.objects.filter(created_at__year=year, created_at__month=month)
+        paginator = Paginator(articles_by_month, 20)
+        page = request.GET.get('page')
+        try:
+            articles_page = paginator.page(page)
+        except PageNotAnInteger:
+            articles_page = paginator.page(1)
+        except EmptyPage:
+            articles_page = paginator.page(paginator.num_pages)
+        except ObjectDoesNotExist:
+            return HttpResponse('Articles not found', status=404)
+        return render(request, 'articles/articles.html', {
+            'articles': articles_page, 'title': 'Articles from ' + str(year) + '/' + str(month),
             'categories': categories})
     else:
         return HttpResponseNotAllowed(['GET'])

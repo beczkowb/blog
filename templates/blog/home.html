@@ -14,18 +14,29 @@
     </div>
 
     <div class="container">
-    <!-- Example row of columns -->
-    <div class="row">
-        {% for article in articles %}
-            <div class="col-md-4">
-                <h2><a href="/articles/{{ article.id }}">{{ article.title }}</a></h2>
-                <p><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                    <small>{{ article.created_at }}</small>
-                </p>
-                <p>{{ article.preface }}</p>
-            </div>
-        {% endfor %}
-    </div>
+        <!-- Example row of columns -->
+        <div class="row">
+            {% for article in articles %}
+                <div class="col-md-4">
+                    <h2><a href="/articles/{{ article.id }}">{{ article.title }}</a></h2>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small>{{ article.created_at }}</small>
+                            </p>
+                        </div>
+                        <div class="col-md-8">
+                            <p>Category: <a href="/articles/category/{{ article.category.id }}">
+                                <small>{{ article.category }}</small>
+                            </a></p>
+                        </div>
+                    </div>
+
+                    <p>{{ article.preface }}</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
 

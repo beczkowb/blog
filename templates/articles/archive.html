@@ -11,11 +11,11 @@
         <div class="row">
             {% for year, months in dates.items %}
                 <div class="col-xs-6 col-sm-4 col-md-2">
-                    <h3><a href="{{ year }}">{{ year }}</a></h3>
+                    <h3><a href="archive/{{ year }}">{{ year }}</a></h3>
                     <ul>
                         {% for month in months %}
                             <li>
-                                <a href="{{ year }}/{{ forloop.counter }}">{{ month }}</a>
+                                <a href="archive/{{ year }}/{{ forloop.counter }}">{{ month }}</a>
                             </li>
                         {% endfor %}
                     </ul>

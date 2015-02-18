@@ -7,6 +7,6 @@ urlpatterns = patterns('',
     url(r'^tags$', 'articles.views.tags', name='tags'),
     url(r'^tag/(?P<tag_id>\d+)$', 'articles.views.articles_tag_id', name='articles_tag_id'),
     url(r'^category/(?P<category_id>\d+)$', 'articles.views.articles_category_id', name='articles_category_id'),
-    # url(r'^(?P<year>\d+)$', 'articles.views.articles_year', name='articles_year'),
-    # url(r'^(?P<year>\d+)/(?P<day>\d+)$', 'articles.views.articles_year_day', name='articles_year_day'),
+    url(r'^archive/(?P<year>\d+)$', 'articles.views.articles_year', name='articles_year'),
+    url(r'^archive/(?P<year>\d+)/(?P<month>\d+)$', 'articles.views.articles_year_month', name='articles_year_month'),
 )
