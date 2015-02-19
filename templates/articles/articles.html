@@ -10,7 +10,18 @@
         {% for article in articles %}
             <div>
                 <h2><a href="/articles/{{ article.id }}">{{ article.title }}</a></h2>
-                <p><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span><small>{{ article.created_at }}</small></p>
+                <div class="row">
+                        <div class="col-md-2">
+                            <p><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small>{{ article.created_at }}</small>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p>Category: <a href="/articles/category/{{ article.category.id }}">
+                                <small>{{ article.category }}</small>
+                            </a></p>
+                        </div>
+                    </div>
                 <p>{{ article.preface }}</p>
             </div>
         {% endfor %}

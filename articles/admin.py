@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from pagedown.widgets import AdminPagedownWidget
-from .models import Article, Tag, Category
+from .models import Article, Tag, Category, BlogName, Owner, Greeting
 
 
 class ArticleForm(forms.ModelForm):
@@ -20,3 +20,6 @@ class ArticleAdmin(admin.ModelAdmin):
 
 admin.site.register(Tag)
 admin.site.register(Category)
+admin.site.register(BlogName)
+admin.site.register(Owner)
+admin.site.register(Greeting)

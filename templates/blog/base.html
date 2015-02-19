@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <title>{% block title %} {% endblock %}</title>
+    <title>{% block title %} {{ blog_name }} {% endblock %}</title>
     {% block js %}
     {% endblock %}
     <style>
@@ -35,7 +35,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">BLOG</a>
+            <a class="navbar-brand" href="/">{{ blog_name }}</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -64,7 +64,7 @@
 <div class="container">
     <hr>
     <footer>
-        <p>&copy; Bartłomiej Bęczkowski 2015</p>
+        <p>&copy; {{ owner.name }} 2015</p>
     </footer>
 </div>
 

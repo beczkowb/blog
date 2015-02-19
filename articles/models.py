@@ -32,3 +32,32 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = _('Categories')
+
+
+class Greeting(models.Model):
+    header = models.CharField(max_length=50, verbose_name=_('header'))
+    body = models.CharField(max_length=300, verbose_name=_('body'))
+
+    def __str__(self):
+        return '%s' % self.header
+
+    class Meta:
+        verbose_name_plural = _('greetings')
+
+
+class BlogName(models.Model):
+    name = models.CharField(max_length=50, verbose_name=_('name'))
+
+    def __str__(self):
+        return '%s' % self.name
+
+    class Meta:
+        verbose_name_plural = _('blog names')
+
+
+class Owner(models.Model):
+    name = models.CharField(max_length=200, verbose_name=_('full name'))
+
+    def __str__(self):
+        return '%s' % self.name
+
